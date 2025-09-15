@@ -1,0 +1,80 @@
+{
+  "election": {
+    "title": "2024 US Presidential Election",
+    "date": "2024-11-05",
+    "type": "presidential"
+  },
+  "candidates": [
+    {
+      "id": "dem-2024",
+      "name": "Kamala Harris",
+      "party": "Democratic Party",
+      "color": "#0015BC"
+    },
+    {
+      "id": "rep-2024",
+      "name": "Donald Trump", 
+      "party": "Republican Party",
+      "color": "#FF0000"
+    },
+    {
+      "id": "ind-2024",
+      "name": "Robert F. Kennedy Jr.",
+      "party": "Independent",
+      "color": "#FFD700"
+    }
+  ],
+  "results": [
+    { "regionId": "CA", "candidateId": "dem-2024", "votes": 11110250, "percentage": 63.5, "electoralVotes": 54 },
+    { "regionId": "TX", "candidateId": "rep-2024", "votes": 5890000, "percentage": 52.1, "electoralVotes": 40 },
+    { "regionId": "FL", "candidateId": "rep-2024", "votes": 5668731, "percentage": 51.2, "electoralVotes": 30 },
+    { "regionId": "NY", "candidateId": "dem-2024", "votes": 4670000, "percentage": 59.0, "electoralVotes": 28 },
+    { "regionId": "PA", "candidateId": "dem-2024", "votes": 3458229, "percentage": 50.4, "electoralVotes": 19 },
+    { "regionId": "IL", "candidateId": "dem-2024", "votes": 3471915, "percentage": 57.5, "electoralVotes": 19 },
+    { "regionId": "OH", "candidateId": "rep-2024", "votes": 3090000, "percentage": 53.3, "electoralVotes": 17 },
+    { "regionId": "GA", "candidateId": "dem-2024", "votes": 2473633, "percentage": 49.5, "electoralVotes": 16 },
+    { "regionId": "NC", "candidateId": "rep-2024", "votes": 2758775, "percentage": 50.1, "electoralVotes": 16 },
+    { "regionId": "MI", "candidateId": "dem-2024", "votes": 2804040, "percentage": 50.6, "electoralVotes": 15 },
+    { "regionId": "NJ", "candidateId": "dem-2024", "votes": 2608335, "percentage": 57.3, "electoralVotes": 14 },
+    { "regionId": "VA", "candidateId": "dem-2024", "votes": 2413568, "percentage": 54.1, "electoralVotes": 13 },
+    { "regionId": "WA", "candidateId": "dem-2024", "votes": 2369612, "percentage": 58.0, "electoralVotes": 12 },
+    { "regionId": "AZ", "candidateId": "dem-2024", "votes": 1672143, "percentage": 49.4, "electoralVotes": 11 },
+    { "regionId": "IN", "candidateId": "rep-2024", "votes": 1729519, "percentage": 56.9, "electoralVotes": 11 },
+    { "regionId": "MA", "candidateId": "dem-2024", "votes": 2382202, "percentage": 65.6, "electoralVotes": 11 },
+    { "regionId": "TN", "candidateId": "rep-2024", "votes": 1852475, "percentage": 60.7, "electoralVotes": 11 },
+    { "regionId": "MD", "candidateId": "dem-2024", "votes": 1985023, "percentage": 65.4, "electoralVotes": 10 },
+    { "regionId": "MN", "candidateId": "dem-2024", "votes": 1717077, "percentage": 52.4, "electoralVotes": 10 },
+    { "regionId": "MO", "candidateId": "rep-2024", "votes": 1718736, "percentage": 56.8, "electoralVotes": 10 },
+    { "regionId": "WI", "candidateId": "dem-2024", "votes": 1630866, "percentage": 49.7, "electoralVotes": 10 },
+    { "regionId": "AL", "candidateId": "rep-2024", "votes": 1441170, "percentage": 62.0, "electoralVotes": 9 },
+    { "regionId": "CO", "candidateId": "dem-2024", "votes": 1804352, "percentage": 55.4, "electoralVotes": 10 },
+    { "regionId": "SC", "candidateId": "rep-2024", "votes": 1385103, "percentage": 54.9, "electoralVotes": 9 },
+    { "regionId": "KY", "candidateId": "rep-2024", "votes": 1326646, "percentage": 62.1, "electoralVotes": 8 },
+    { "regionId": "LA", "candidateId": "rep-2024", "votes": 1255776, "percentage": 58.5, "electoralVotes": 8 },
+    { "regionId": "CT", "candidateId": "dem-2024", "votes": 1080831, "percentage": 59.3, "electoralVotes": 7 },
+    { "regionId": "OK", "candidateId": "rep-2024", "votes": 1020280, "percentage": 65.4, "electoralVotes": 7 },
+    { "regionId": "OR", "candidateId": "dem-2024", "votes": 1340383, "percentage": 56.5, "electoralVotes": 8 },
+    { "regionId": "AR", "candidateId": "rep-2024", "votes": 760647, "percentage": 62.4, "electoralVotes": 6 },
+    { "regionId": "IA", "candidateId": "rep-2024", "votes": 897672, "percentage": 53.1, "electoralVotes": 6 },
+    { "regionId": "KS", "candidateId": "rep-2024", "votes": 771406, "percentage": 56.2, "electoralVotes": 6 },
+    { "regionId": "MS", "candidateId": "rep-2024", "votes": 756764, "percentage": 57.6, "electoralVotes": 6 },
+    { "regionId": "NV", "candidateId": "dem-2024", "votes": 703486, "percentage": 50.1, "electoralVotes": 6 },
+    { "regionId": "UT", "candidateId": "rep-2024", "votes": 865140, "percentage": 58.1, "electoralVotes": 6 },
+    { "regionId": "NE", "candidateId": "rep-2024", "votes": 556846, "percentage": 58.2, "electoralVotes": 5 },
+    { "regionId": "NM", "candidateId": "dem-2024", "votes": 501614, "percentage": 54.3, "electoralVotes": 5 },
+    { "regionId": "WV", "candidateId": "rep-2024", "votes": 545382, "percentage": 68.6, "electoralVotes": 4 },
+    { "regionId": "HI", "candidateId": "dem-2024", "votes": 366130, "percentage": 63.7, "electoralVotes": 4 },
+    { "regionId": "ID", "candidateId": "rep-2024", "votes": 554119, "percentage": 63.8, "electoralVotes": 4 },
+    { "regionId": "ME", "candidateId": "dem-2024", "votes": 435072, "percentage": 53.1, "electoralVotes": 4 },
+    { "regionId": "NH", "candidateId": "dem-2024", "votes": 424921, "percentage": 52.7, "electoralVotes": 4 },
+    { "regionId": "RI", "candidateId": "dem-2024", "votes": 307486, "percentage": 59.4, "electoralVotes": 4 },
+    { "regionId": "MT", "candidateId": "rep-2024", "votes": 343602, "percentage": 56.9, "electoralVotes": 4 },
+    { "regionId": "DE", "candidateId": "dem-2024", "votes": 296268, "percentage": 58.7, "electoralVotes": 3 },
+    { "regionId": "ND", "candidateId": "rep-2024", "votes": 235595, "percentage": 65.1, "electoralVotes": 3 },
+    { "regionId": "SD", "candidateId": "rep-2024", "votes": 261043, "percentage": 61.8, "electoralVotes": 3 },
+    { "regionId": "AK", "candidateId": "rep-2024", "votes": 189951, "percentage": 52.8, "electoralVotes": 3 },
+    { "regionId": "DC", "candidateId": "dem-2024", "votes": 317323, "percentage": 92.2, "electoralVotes": 3 },
+    { "regionId": "VT", "candidateId": "dem-2024", "votes": 242820, "percentage": 66.1, "electoralVotes": 3 },
+    { "regionId": "WY", "candidateId": "rep-2024", "votes": 193559, "percentage": 69.9, "electoralVotes": 3 }
+  ]
+}
