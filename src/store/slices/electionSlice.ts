@@ -59,6 +59,10 @@ const electionSlice = createSlice({
       state.lastUpdated = action.payload;
     },
     resetElection: () => initialState,
+    clearElectionData: (state) => {
+      state.results = [];
+      state.selectedCandidateId = null;
+    },
   },
 });
 
@@ -73,6 +77,7 @@ export const {
   setLiveMode,
   setLastUpdated,
   resetElection,
+  clearElectionData,
 } = electionSlice.actions;
 
 export default electionSlice.reducer;

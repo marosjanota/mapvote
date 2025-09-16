@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { GeoFeatureCollection } from '../../types/geo';
+import { MapConfig } from '../../data/availableMaps';
+import { GeographyStyleTheme } from '../../theme/mapStyles';
 
 interface MapSliceState {
   geoData: GeoFeatureCollection | null;
@@ -8,6 +10,9 @@ interface MapSliceState {
   center: [number, number];
   hoveredRegionId: string | null;
   selectedRegionId: string | null;
+  selectedMap: MapConfig | null;
+  displayMode: 'election' | 'geography';
+  geographyStyle: GeographyStyleTheme;
 }
 
 const initialState: MapSliceState = {
@@ -17,6 +22,9 @@ const initialState: MapSliceState = {
   center: [0, 0],
   hoveredRegionId: null,
   selectedRegionId: null,
+  selectedMap: null,
+  displayMode: 'election',
+  geographyStyle: 'default',
 };
 
 const mapSlice = createSlice({
@@ -41,6 +49,21 @@ const mapSlice = createSlice({
     setSelectedRegion: (state, action: PayloadAction<string | null>) => {
       state.selectedRegionId = action.payload;
     },
+    setSelectedMap: (state, action: PayloadAction<MapConfig | null>) => {
+      state.selectedMap = action.payload;
+      if (action.payload) {
+        state.projection = action.payload.projection;
+        if (action.payload.center) {
+          state.center = action.payload.center;
+        }
+      }
+    },
+    setDisplayMode: (state, action: PayloadAction<'election' | 'geography'>) => {
+      state.displayMode = action.payload;
+    },
+    setGeographyStyle: (state, action: PayloadAction<GeographyStyleTheme>) => {
+      state.geographyStyle = action.payload;
+    },
     resetMap: () => initialState,
   },
 });
@@ -52,6 +75,9 @@ export const {
   setCenter,
   setHoveredRegion,
   setSelectedRegion,
+  setSelectedMap,
+  setDisplayMode,
+  setGeographyStyle,
   resetMap,
 } = mapSlice.actions;
 

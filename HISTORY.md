@@ -286,4 +286,58 @@ npm run preview
 - `typescript` - Type safety
 - `@types/*` - Type definitions for all libraries
 
+## Latest Session Updates
+
+### Map Selection Feature (New)
+Added comprehensive map selection capability allowing users to:
+
+1. **Map Selector Component**
+   - New dropdown selector in the left panel
+   - Support for multiple map types (countries, continents, world)
+   - Categories: World, Continents, Countries, Regions
+   - Visual indicators with icons for each category
+   - Automatic map loading with progress indicator
+
+2. **Available Maps Configuration**
+   - Created `availableMaps.ts` with predefined map configurations
+   - Supports different projections per map (Mercator, Albers, EqualEarth)
+   - Custom center and scale settings per map
+   - Current maps available:
+     - United States (with election data support)
+     - World Countries
+     - All continents (Europe, Africa, Asia, etc.)
+
+3. **Display Modes**
+   - **Election Mode**: Shows election data with candidate colors
+   - **Geography Mode**: Shows plain map without election data
+   - Toggle between modes (only available for US map with election data)
+   - Automatic mode switching when loading non-US maps
+
+4. **Redux State Updates**
+   - Added `selectedMap` and `displayMode` to map slice
+   - New actions: `setSelectedMap`, `setDisplayMode`
+   - Added `clearElectionData` action to reset results when switching maps
+
+5. **UI Enhancements**
+   - Left panel now shows/hides election controls based on display mode
+   - Map canvas uses different coloring for geography vs election mode
+   - Overlay bar only shows in election mode
+   - Default US map loads automatically on startup
+
+6. **Data Files**
+   - Downloaded world-countries.geojson from Natural Earth
+   - Ready for additional continent/region maps to be added
+
+### Files Modified
+- `src/store/slices/mapSlice.ts` - Added map selection state
+- `src/store/slices/electionSlice.ts` - Added clearElectionData action
+- `src/components/LeftPanel.tsx` - Added MapSelector, conditional election controls
+- `src/components/MapCanvas.tsx` - Added geography mode support
+- `src/App.tsx` - Added default map loading on startup
+
+### New Files Created
+- `src/data/availableMaps.ts` - Map configurations
+- `src/components/MapSelector.tsx` - Map selection UI component
+- `public/world-countries.geojson` - World map data
+
 This history provides complete context for continuing development of the MapVote application. All major features are implemented and the application is ready for production use or further enhancement.

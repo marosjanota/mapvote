@@ -6,6 +6,7 @@ import { setHoveredRegion } from '../store/slices/mapSlice';
 import { getProjection } from '../utils/projections';
 import { GeoFeature } from '../types/geo';
 import { MapOverlayBar } from './MapOverlayBar';
+import { mapStyles } from '../theme/mapStyles';
 
 export const MapCanvas = () => {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -13,7 +14,7 @@ export const MapCanvas = () => {
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   
   const dispatch = useAppDispatch();
-  const { geoData, projection } = useAppSelector((state) => state.map);
+  const { geoData, projection, displayMode, geographyStyle } = useAppSelector((state) => state.map);
   const { candidates, results } = useAppSelector((state) => state.election);
   const { isLoading, showOverlayBar } = useAppSelector((state) => state.ui);
 
@@ -57,13 +58,21 @@ export const MapCanvas = () => {
     // Create main group for zooming
     const g = svg.append('g');
 
+    // Get current style based on mode
+    const geoStyle = mapStyles.geography[geographyStyle];
+    const electionStyle = mapStyles.election;
+
     // Function to get region color
     const getRegionColor = (feature: GeoFeature): string => {
+      if (displayMode === 'geography') {
+        return geoStyle.fill;
+      }
+      
       const regionResult = results.find(r => r.regionId === feature.properties.id);
-      if (!regionResult) return '#e0e0e0'; // No data - gray
+      if (!regionResult) return electionStyle.noData;
       
       const candidate = candidates.find(c => c.id === regionResult.candidateId);
-      return candidate?.color || '#e0e0e0';
+      return candidate?.color || electionStyle.noData;
     };
 
     // Render regions
@@ -71,11 +80,13 @@ export const MapCanvas = () => {
       .data(geoData.features)
       .enter()
       .append('path')
+      .attr('data-region-id', (d) => (d as GeoFeature).properties.id)
       .attr('d', (d) => path(d as any) || '')
       .attr('fill', (d) => getRegionColor(d as GeoFeature))
-      .attr('stroke', '#fff')
-      .attr('stroke-width', 1)
+      .attr('stroke', displayMode === 'geography' ? geoStyle.stroke : electionStyle.stroke)
+      .attr('stroke-width', displayMode === 'geography' ? geoStyle.strokeWidth : electionStyle.strokeWidth)
       .style('cursor', 'pointer')
+      .style('opacity', displayMode === 'geography' ? (geoStyle.opacity || 1) : 1)
       .on('mouseenter', function(_, d) {
         const feature = d as GeoFeature;
         dispatch(setHoveredRegion(feature.properties.id));
@@ -95,6 +106,8 @@ export const MapCanvas = () => {
       .data(geoData.features)
       .enter()
       .append('text')
+      .attr('class', 'region-label')
+      .attr('data-region-id', (d) => (d as GeoFeature).properties.id)
       .attr('x', (d) => {
         const centroid = path.centroid(d as any);
         return centroid[0];
@@ -105,13 +118,13 @@ export const MapCanvas = () => {
       })
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
-      .style('font-size', '12px')
-      .style('font-weight', 'bold')
-      .style('fill', '#333')
+      .style('font-size', displayMode === 'geography' ? (geoStyle.textSize || '12px') : (electionStyle.textSize || '12px'))
+      .style('font-weight', displayMode === 'geography' ? (geoStyle.textWeight || 'bold') : (electionStyle.textWeight || 'bold'))
+      .style('fill', displayMode === 'geography' ? geoStyle.textColor : electionStyle.textColor)
       .style('pointer-events', 'none')
       .text((d) => (d as GeoFeature).properties.abbreviation || '');
 
-  }, [geoData, projection, dimensions, candidates, results, dispatch]);
+  }, [geoData, projection, dimensions, candidates, results, displayMode, geographyStyle, dispatch]);
 
   if (isLoading) {
     return (
@@ -159,7 +172,7 @@ export const MapCanvas = () => {
             </Typography>
           </Box>
         )}
-        {showOverlayBar && <MapOverlayBar />}
+        {showOverlayBar && displayMode === 'election' && <MapOverlayBar />}
       </Paper>
     </Box>
   );

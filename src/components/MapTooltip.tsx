@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Paper, Typography, Box, Divider } from '@mui/material';
 import { useAppSelector } from '../hooks/redux';
 
 export const MapTooltip = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [visible, setVisible] = useState(false);
   
-  const { hoveredRegionId, geoData } = useAppSelector((state) => state.map);
+  const { hoveredRegionId, geoData, displayMode } = useAppSelector((state) => state.map);
   const { candidates, results } = useAppSelector((state) => state.election);
 
   useEffect(() => {
@@ -32,59 +31,92 @@ export const MapTooltip = () => {
   const regionResult = results.find(r => r.regionId === hoveredRegionId);
   const candidate = regionResult ? candidates.find(c => c.id === regionResult.candidateId) : null;
 
+  // Simple inline styles - no emotion/MUI overhead
+  const tooltipStyle: React.CSSProperties = {
+    position: 'fixed',
+    left: position.x,
+    top: position.y,
+    zIndex: 9999,
+    pointerEvents: 'none',
+    backgroundColor: '#ffffff',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    padding: '8px 12px',
+    minWidth: '180px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+    fontSize: '13px',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+  };
+
+  const titleStyle: React.CSSProperties = {
+    fontWeight: 'bold',
+    marginBottom: '4px',
+    color: '#333',
+  };
+
+  const subtitleStyle: React.CSSProperties = {
+    color: '#666',
+    fontSize: '12px',
+    marginBottom: '6px',
+  };
+
+  const candidateStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    marginBottom: '2px',
+  };
+
+  const dotStyle: React.CSSProperties = {
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    backgroundColor: candidate?.color || '#ccc',
+  };
+
+  const separatorStyle: React.CSSProperties = {
+    height: '1px',
+    backgroundColor: '#eee',
+    margin: '6px 0',
+  };
+
   return (
-    <Paper
-      elevation={4}
-      sx={{
-        position: 'fixed',
-        left: position.x,
-        top: position.y,
-        zIndex: 9999,
-        p: 2,
-        minWidth: 200,
-        pointerEvents: 'none',
-      }}
-    >
-      <Typography variant="subtitle1" fontWeight="bold">
+    <div style={tooltipStyle}>
+      <div style={titleStyle}>
         {region?.properties.name || hoveredRegionId}
-      </Typography>
+      </div>
       
-      {region?.properties.electoralVotes && (
-        <Typography variant="body2" color="text.secondary">
+      {region?.properties.electoralVotes && displayMode === 'election' && (
+        <div style={subtitleStyle}>
           Electoral Votes: {region.properties.electoralVotes}
-        </Typography>
+        </div>
       )}
       
-      {regionResult && candidate && (
+      {regionResult && candidate && displayMode === 'election' ? (
         <>
-          <Divider sx={{ my: 1 }} />
-          <Box display="flex" alignItems="center" gap={1}>
-            <Box
-              sx={{
-                width: 12,
-                height: 12,
-                bgcolor: candidate.color,
-                borderRadius: '50%',
-              }}
-            />
-            <Typography variant="body2">
-              {candidate.name}
-            </Typography>
-          </Box>
-          <Typography variant="body2" color="text.secondary">
+          <div style={separatorStyle}></div>
+          <div style={candidateStyle}>
+            <div style={dotStyle}></div>
+            <span>{candidate.name}</span>
+          </div>
+          <div style={subtitleStyle}>
             {regionResult.votes.toLocaleString()} votes ({regionResult.percentage.toFixed(1)}%)
-          </Typography>
+          </div>
         </>
-      )}
-      
-      {!regionResult && (
+      ) : displayMode === 'election' ? (
         <>
-          <Divider sx={{ my: 1 }} />
-          <Typography variant="body2" color="text.secondary">
+          <div style={separatorStyle}></div>
+          <div style={subtitleStyle}>
             No election data available
-          </Typography>
+          </div>
         </>
+      ) : (
+        displayMode === 'geography' && (
+          <div style={subtitleStyle}>
+            Geographic region
+          </div>
+        )
       )}
-    </Paper>
+    </div>
   );
 };
