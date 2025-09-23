@@ -12,14 +12,16 @@ import {
   Tabs,
   TextField,
   Stack,
+  Divider,
 } from '@mui/material';
 import { CloudUpload, Link as LinkIcon } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { setImportDialog, setLoading, setError } from '../store/slices/uiSlice';
-import { setGeoData } from '../store/slices/mapSlice';
+import { setGeoData, setSelectedMap, setDisplayMode } from '../store/slices/mapSlice';
 import { setCandidates, setResults } from '../store/slices/electionSlice';
 import { GeoFeatureCollection } from '../types/geo';
 import { Candidate, RegionResult } from '../types/election';
+import { availableMaps } from '../data/availableMaps';
 import * as topojson from 'topojson-client';
 
 interface TabPanelProps {
@@ -167,44 +169,132 @@ export const ImportDialog = () => {
     }
   };
 
-  const handleLoadPreset = async (preset: '2024' | '2020' | 'map-only') => {
+  const handleLoadPreset = async (preset: '2024' | '2020' | 'map-only' | 'uk-2024' | 'uk-2019' | 'uk-map-only') => {
     dispatch(setLoading(true));
     try {
-      // Always load the USA states map
-      const mapResponse = await fetch('/usa-states.geojson');
-      const mapData = await mapResponse.json();
+      const isUK = preset.startsWith('uk-');
       
-      // Transform the GeoJSON to match our expected format
-      const transformedMapData = {
-        ...mapData,
-        features: mapData.features.map((feature: any) => ({
-          ...feature,
-          properties: {
-            ...feature.properties,
-            id: feature.properties.state_code || feature.properties.name,
-            abbreviation: feature.properties.state_code,
-          }
-        }))
-      };
-      
-      dispatch(setGeoData(transformedMapData));
-      
-      // Load election data based on preset
-      if (preset !== 'map-only') {
-        const electionFile = preset === '2024' ? '/mock-election-2024.json' : '/election-2020-results.json';
-        const electionResponse = await fetch(electionFile);
-        const electionData = await electionResponse.json();
+      if (isUK) {
+        // Load UK map
+        const ukMap = availableMaps.find(m => m.id === 'uk-topo');
+        if (!ukMap) throw new Error('UK map not found');
         
-        dispatch(setCandidates(electionData.candidates));
-        dispatch(setResults(electionData.results));
+        const mapResponse = await fetch(`/${ukMap.filename}`);
+        const topoData = await mapResponse.json();
+        
+        // Convert TopoJSON to GeoJSON
+        const objectKey = Object.keys(topoData.objects)[0];
+        const geoData = topojson.feature(topoData, topoData.objects[objectKey]);
+        
+        // Ensure it's a FeatureCollection
+        const featureCollection = geoData.type === 'Feature' 
+          ? { type: 'FeatureCollection', features: [geoData] }
+          : geoData;
+        
+        // Transform features to ensure they have proper IDs
+        const transformedMapData = {
+          ...featureCollection,
+          features: (featureCollection as any).features.map((feature: any) => ({
+            ...feature,
+            properties: {
+              ...feature.properties,
+              id: feature.properties.PCON24CD || feature.properties.EER13CD || feature.properties.id || feature.properties.name,
+              name: feature.properties.PCON24NM || feature.properties.EER13NM || feature.properties.name,
+            }
+          }))
+        };
+        
+        dispatch(setGeoData(transformedMapData as GeoFeatureCollection));
+        dispatch(setSelectedMap(ukMap));
+        dispatch(setDisplayMode(preset === 'uk-map-only' ? 'geography' : 'election'));
+        
+        // Load UK election data if needed
+        if (preset === 'uk-2024') {
+          const electionResponse = await fetch('/uk-election-2024-results.json');
+          const electionData = await electionResponse.json();
+          
+          // Process UK election data
+          const candidates: Candidate[] = electionData.parties.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            party: p.abbreviation,
+            color: p.color,
+          }));
+          
+          const results: RegionResult[] = electionData.constituencyResults.map((r: any) => ({
+            regionId: r.regionId,
+            candidateId: r.candidateId,
+            votes: r.votes || 0,
+            percentage: r.percentage || 0,
+          }));
+          
+          dispatch(setCandidates(candidates));
+          dispatch(setResults(results));
+        } else if (preset === 'uk-2019') {
+          const electionResponse = await fetch('/uk-election-2019-results.json');
+          const electionData = await electionResponse.json();
+          
+          const candidates: Candidate[] = electionData.parties.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            party: p.abbreviation,
+            color: p.color,
+          }));
+          
+          const results: RegionResult[] = electionData.constituencyResults.map((r: any) => ({
+            regionId: r.regionId,
+            candidateId: r.candidateId,
+            votes: r.votes || 0,
+            percentage: r.percentage || 0,
+          }));
+          
+          dispatch(setCandidates(candidates));
+          dispatch(setResults(results));
+        } else {
+          // Clear election data for map-only
+          dispatch(setCandidates([]));
+          dispatch(setResults([]));
+        }
+        
       } else {
-        // Clear any existing election data
-        dispatch(setCandidates([]));
-        dispatch(setResults([]));
+        // Original US map loading logic
+        const mapResponse = await fetch('/usa-states.geojson');
+        const mapData = await mapResponse.json();
+        
+        // Transform the GeoJSON to match our expected format
+        const transformedMapData = {
+          ...mapData,
+          features: mapData.features.map((feature: any) => ({
+            ...feature,
+            properties: {
+              ...feature.properties,
+              id: feature.properties.state_code || feature.properties.name,
+              abbreviation: feature.properties.state_code,
+            }
+          }))
+        };
+        
+        dispatch(setGeoData(transformedMapData));
+        dispatch(setDisplayMode(preset === 'map-only' ? 'geography' : 'election'));
+        
+        // Load election data based on preset
+        if (preset !== 'map-only') {
+          const electionFile = preset === '2024' ? '/mock-election-2024.json' : '/election-2020-results.json';
+          const electionResponse = await fetch(electionFile);
+          const electionData = await electionResponse.json();
+          
+          dispatch(setCandidates(electionData.candidates));
+          dispatch(setResults(electionData.results));
+        } else {
+          // Clear any existing election data
+          dispatch(setCandidates([]));
+          dispatch(setResults([]));
+        }
       }
       
       handleClose();
     } catch (error) {
+      console.error('Error loading preset:', error);
       dispatch(setError(`Failed to load ${preset} data.`));
     } finally {
       dispatch(setLoading(false));
@@ -299,6 +389,10 @@ export const ImportDialog = () => {
           </Alert>
           
           <Stack spacing={2}>
+            <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
+              🇺🇸 United States Elections
+            </Typography>
+            
             <Button
               variant="contained"
               fullWidth
@@ -321,6 +415,38 @@ export const ImportDialog = () => {
               onClick={() => handleLoadPreset('map-only')}
             >
               US States Map Only (No Election Data)
+            </Button>
+            
+            <Divider sx={{ my: 2 }} />
+            
+            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+              🇬🇧 United Kingdom Elections
+            </Typography>
+            
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={() => handleLoadPreset('uk-2024')}
+              color="secondary"
+            >
+              2024 UK General Election (Labour Victory)
+            </Button>
+            
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={() => handleLoadPreset('uk-2019')}
+              color="secondary"
+            >
+              2019 UK General Election (Conservative Victory)
+            </Button>
+            
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={() => handleLoadPreset('uk-map-only')}
+            >
+              UK Parliamentary Map Only (No Election Data)
             </Button>
           </Stack>
         </TabPanel>

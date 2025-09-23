@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Box } from '@mui/material';
+import * as topojson from 'topojson-client';
 import { Header } from './components/Header';
 import { LeftPanel } from './components/LeftPanel';
 import { MapCanvas } from './components/MapCanvas';
@@ -23,7 +24,20 @@ function App() {
       if (usMap) {
         fetch(`/${usMap.filename}`)
           .then(res => res.json())
-          .then(geoData => {
+          .then(data => {
+            let geoData = data;
+            
+            // Check if it's TopoJSON and convert to GeoJSON
+            if (data.type === 'Topology') {
+              const objectKey = Object.keys(data.objects)[0];
+              if (objectKey) {
+                const feature = topojson.feature(data, data.objects[objectKey]);
+                geoData = feature.type === 'Feature' 
+                  ? { type: 'FeatureCollection', features: [feature] }
+                  : feature;
+              }
+            }
+            
             dispatch(setSelectedMap(usMap));
             dispatch(setGeoData(geoData));
           })

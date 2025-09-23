@@ -14,6 +14,7 @@ import {
   SelectChangeEvent,
 } from '@mui/material';
 import { Map, Public, Landscape, Palette } from '@mui/icons-material';
+import * as topojson from 'topojson-client';
 import { availableMaps, mapCategories, MapConfig } from '../data/availableMaps';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { setGeoData, setSelectedMap, setDisplayMode, setGeographyStyle } from '../store/slices/mapSlice';
@@ -43,7 +44,29 @@ export const MapSelector = () => {
         throw new Error(`Failed to load map: ${map.filename}`);
       }
       
-      const geoData = await response.json();
+      let geoData = await response.json();
+      
+      // Check if it's TopoJSON and convert to GeoJSON
+      if (geoData.type === 'Topology') {
+        // Find the first object in the topology
+        const objectKey = Object.keys(geoData.objects)[0];
+        if (!objectKey) {
+          throw new Error('No objects found in TopoJSON');
+        }
+        
+        // Convert TopoJSON to GeoJSON
+        const feature = topojson.feature(geoData, geoData.objects[objectKey]);
+        
+        // If it's a single Feature, wrap it in a FeatureCollection
+        if (feature.type === 'Feature') {
+          geoData = {
+            type: 'FeatureCollection',
+            features: [feature]
+          };
+        } else {
+          geoData = feature;
+        }
+      }
       
       dispatch(setSelectedMap(map));
       dispatch(setGeoData(geoData));
@@ -147,7 +170,7 @@ export const MapSelector = () => {
             />
           </Box>
 
-          {selectedMap.id === 'usa-states' && (
+          {(selectedMap.id === 'usa-states' || selectedMap.id === 'uk-topo' || selectedMap.id === 'uk-constituencies') && (
             <Box display="flex" alignItems="center" justifyContent="space-between">
               <Typography variant="caption" color="text.secondary">
                 Display Mode:
@@ -227,8 +250,8 @@ export const MapSelector = () => {
       )}
 
       <Typography variant="caption" color="text.secondary">
-        Select a map to display geographic boundaries. Election data is only
-        available for US States.
+        Select a map to display geographic boundaries. Election data is available
+        for US States and UK Parliamentary Constituencies.
       </Typography>
     </Box>
   );

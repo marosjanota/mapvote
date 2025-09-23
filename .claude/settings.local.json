@@ -3,7 +3,13 @@
     "allow": [
       "Bash(curl:*)",
       "Bash(npm run dev:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "WebFetch(domain:geoportal.statistics.gov.uk)",
+      "WebFetch(domain:commonslibrary.parliament.uk)",
+      "WebFetch(domain:github.com)",
+      "Bash(move:*)",
+      "Bash(mv:*)",
+      "Bash(python3:*)"
     ],
     "deny": []
   }

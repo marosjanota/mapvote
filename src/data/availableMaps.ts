@@ -19,6 +19,26 @@ export const availableMaps: MapConfig[] = [
     description: 'US States with electoral data support'
   },
   {
+    id: 'uk-constituencies',
+    name: 'UK Parliamentary Constituencies',
+    category: 'country',
+    filename: 'uk-parliamentary-constituencies-2024.geojson',
+    projection: 'mercator',
+    center: [-2, 54],
+    scale: 3500,
+    description: 'UK Westminster Parliamentary Constituencies (2024 boundaries) - 650 seats'
+  },
+  {
+    id: 'uk-topo',
+    name: 'UK Constituencies (TopoJSON)',
+    category: 'country',
+    filename: 'maps/UK_topo_eer.json',
+    projection: 'mercator',
+    center: [-2, 55],
+    scale: 4000,
+    description: 'UK Electoral Regions - TopoJSON format'
+  },
+  {
     id: 'world-countries',
     name: 'World Countries',
     category: 'world',
